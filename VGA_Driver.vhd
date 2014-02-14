@@ -28,8 +28,8 @@ entity atlys_lab_video is
     port ( 
              clk   : in  std_logic; -- 100 MHz
              reset : in  std_logic;
-				 SW0   : in std_logic;
-				 SW1   : in std_logic;
+				 up   : in std_logic;
+				 down   : in std_logic;
              tmds  : out std_logic_vector(3 downto 0);
              tmdsb : out std_logic_vector(3 downto 0)
          );
@@ -46,8 +46,9 @@ COMPONENT pixel_gen
 		row : IN unsigned(10 downto 0);
 		column : IN unsigned(10 downto 0);
 		blank : IN std_logic;          
-		switch0 : IN std_logic;
-		switch1 : IN std_logic;
+		ball_x : IN unsigned(10 downto 0);
+		ball_y : IN unsigned(10 downto 0);
+		paddle_y : IN unsigned(10 downto 0);
 		r : OUT std_logic_vector(7 downto 0);
 		g : OUT std_logic_vector(7 downto 0);
 		b : OUT std_logic_vector(7 downto 0)
@@ -67,10 +68,25 @@ COMPONENT pixel_gen
 		);
 	END COMPONENT;
 	
-	signal row_connector, column_connector : unsigned(10 downto 0);
+		COMPONENT pong_control
+	PORT(
+		clk : IN std_logic;
+		reset : IN std_logic;
+		up : IN std_logic;
+		down : IN std_logic;
+		v_completed : IN std_logic;          
+		ball_x : OUT unsigned(10 downto 0);
+		ball_y : OUT unsigned(10 downto 0);
+		paddle_y : OUT unsigned(10 downto 0)
+		);
+	END COMPONENT;
+
 	
+	
+	signal row_connector, column_connector : unsigned(10 downto 0);
+	signal ball_x_sig, ball_y_sig, paddle_y_sig : unsigned(10 downto 0);
 	signal red_sig, green_sig, blue_sig : std_logic_vector(7 downto 0);
-	signal pixel_clk, serialize_clk, serialize_clk_n, h_sync_sig, v_sync_sig, v_completed, blank_sig, red_s, green_s, blue_s, clock_s:std_logic;
+	signal completed_connector, pixel_clk, serialize_clk, serialize_clk_n, h_sync_sig, v_sync_sig, v_completed, blank_sig, red_s, green_s, blue_s, clock_s:std_logic;
 begin
 
     -- Clock divider - creates pixel clock from 100MHz clock
@@ -106,7 +122,7 @@ begin
 		reset => reset,
 		h_sync => h_sync_sig,
 		v_sync => v_sync_sig,
-		v_completed => open,
+		v_completed => completed_connector,
 		blank => blank_sig,
 		row => row_connector,
 		column => column_connector
@@ -117,11 +133,23 @@ begin
 		row => row_connector,
 		column => column_connector,
 		blank => blank_sig,
-		switch0 => SW0,
-		switch1 => SW1,
+		ball_x => ball_x_sig,
+		ball_y => ball_y_sig,
+		paddle_y => paddle_y_sig,
 		r => red_sig,
 		g => green_sig,
 		b => blue_sig
+	);
+	
+	Inst_pong_control: pong_control PORT MAP(
+		clk => pixel_clk,
+		reset => reset,
+		up => up,
+		down => down,
+		v_completed => completed_connector,
+		ball_x => ball_x_sig,
+		ball_y => ball_y_sig,
+		paddle_y => paddle_y_sig
 	);
 
 

@@ -33,8 +33,9 @@ entity pixel_gen is
     port ( row      : in unsigned(10 downto 0);
            column   : in unsigned(10 downto 0);
            blank    : in std_logic;
-			  switch0  : in std_logic;
-			  switch1  : in std_logic;
+			  ball_x   : in unsigned(10 downto 0);
+			  ball_y   : in unsigned(10 downto 0);
+		     paddle_y : in unsigned(10 downto 0);	
            r        : out std_logic_vector(7 downto 0);
            g        : out std_logic_vector(7 downto 0);
            b        : out std_logic_vector(7 downto 0));
@@ -52,37 +53,47 @@ begin
 		b <= (others => '0');
 		
 		if(blank = '0') then 
-		if(column > 200 and column < 215 and row > 100 and row < 225) then
+		if(column > (ball_x - 5) and column < (ball_x + 5) and row > (ball_y - 5) and row < (ball_y + 5)) then
+		r <= (others => '1'); 
+		g <= (others => '0');
+		b <= (others => '0');
+		end if;
+		if(column > 0 and column < 15 and row > (paddle_y - 50) and row < (paddle_y + 50)) then
+		r <= (others => '0'); 
+		g <= (others => '1');
+		b <= (others => '0');
+		end if;		
+		if(column > 230 and column < 246 and row > 150 and row < 276) then
 		r <= (others => '0'); 
 		g <= (others => '0');
 		b <= (others => '1');
 		end if;
-		if(column > 235 and column < 250 and row > 100 and row < 225) then
+		if(column > 264 and column < 281 and row > 150 and row < 276) then
 		r <= (others => '0'); 
 		g <= (others => '0');
 		b <= (others => '1');
 		end if;
-		if(column > 215 and column < 235 and row > 100 and row < 125) then
+		if(column > 244 and column < 276 and row > 150 and row < 176) then
 		r <= (others => '0'); 
 		g <= (others => '0');
 		b <= (others => '1');
 		end if;
-		if(column > 215 and column < 235 and row > 150 and row < 175) then
+		if(column > 244 and column < 276 and row > 200 and row < 226) then
 		r <= (others => '0'); 
 		g <= (others => '0');
 		b <= (others => '1');
 		end if;
-		if(column > 280 and column < 330 and row > 150 and row < 175) then
+		if(column > 309 and column < 361 and row > 200 and row < 226) then
 		r <= (others => '0'); 
 		g <= (others => '0');
 		b <= (others => '1');
 		end if;
-		if(column > 280 and column < 295 and row > 175 and row < 250) then
+		if(column > 309 and column < 326 and row > 224 and row < 301) then
 		r <= (others => '0'); 
 		g <= (others => '0');
 		b <= (others => '1');
 		end if;
-		if(column > 295 and column < 320 and row > 200 and row < 215) then
+		if(column > 324 and column < 351 and row > 249 and row < 266) then
 		r <= (others => '0'); 
 		g <= (others => '0');
 		b <= (others => '1');
