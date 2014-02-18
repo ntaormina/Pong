@@ -21,7 +21,7 @@ signal count, count_next: unsigned(19 downto 0);
 
 begin
 
-process(clk, reset)
+process(clk, reset, button_next, count)
 begin
 
 	if(reset = '1') then
