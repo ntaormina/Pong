@@ -1,31 +1,7 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date:    01:19:21 02/14/2014 
--- Design Name: 
--- Module Name:    pong_control - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
-----------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
 use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
 library UNISIM;
 use UNISIM.VComponents.all;
 
@@ -58,7 +34,9 @@ END COMPONENT;
 
 
 type pong_type is(moving, hit_top, hit_right, hit_bottom, hit_paddle, lose);
+
 signal state_reg, state_next: pong_type;
+
 signal  paddle_next, paddle_reg, ball_x_pos, ball_y_pos, ball_x_pos_next, ball_y_pos_next : unsigned(10 downto 0);
 signal count_reg, count_next : unsigned(12 downto 0);
 signal up_pulse, down_pulse : std_logic;
@@ -104,10 +82,12 @@ end process;
 
 process(up_pulse, down_pulse, paddle_reg, paddle_next)
 begin
+
+paddle_next <= paddle_reg;
 	
-	if(up_pulse = '1' and paddle_reg > 75) then		
+	if(up_pulse = '1' and paddle_reg > 60) then		
 		paddle_next <= paddle_reg - 10;	
-	elsif(down_pulse = '1' and paddle_reg < 405) then		
+	elsif(down_pulse = '1' and paddle_reg < 430) then		
 		paddle_next <= paddle_reg + 10;	
 	end if;
 
@@ -136,11 +116,11 @@ end process;
 			
 		end process;
 
-process( ball_x_pos, ball_y_pos, state_reg)
+process(state_reg, state_next, count_next, ball_x_pos, ball_y_pos, state_reg)
 begin
 
+if(count_next = 0 and v_completed = '1') then
 
-if(count_next = 5000) then
 state_next <= state_reg;
 
 case state_reg is 
@@ -180,7 +160,7 @@ end case;
 end if;
 end process;
 
-process( ball_x_pos, ball_y_pos, state_next)
+process( state_reg, ball_x_pos, ball_y_pos, state_next )
 begin
 
 	ball_x_pos_next <= ball_x_pos + 1;
@@ -216,7 +196,7 @@ end case;
 
 end process;
 
-paddle_y <= paddle_next;
+paddle_y <= paddle_reg;
 ball_x <= ball_x_pos_next;
 ball_y <= ball_y_pos_next;
 
