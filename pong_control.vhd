@@ -46,37 +46,54 @@ end pong_control;
 architecture Behavioral of pong_control is
 type pong_type is(moving, hit_top, hit_right, hit_bottom, hit_paddle, lose);
 signal state_reg, state_next: pong_type;
-signal paddle_next, paddle_reg, ball_x_pos, ball_y_pos : unsigned(10 downto 0);
-signal x_adder, y_adder: integer;
+signal  paddle_next, paddle_reg, ball_x_pos, ball_y_pos, ball_x_pos_next, ball_y_pos_next : unsigned(10 downto 0);
+signal count_reg, count_next : unsigned(12 downto 0);
+
 
 begin
 
-process(up, down, clk, paddle_reg)
+process(count_reg, v_completed)
+		begin
+			if(count_next = 5001) then
+				count_next <=  "0000000000000";				
+			elsif(v_completed = '1') then
+				count_next <= count_reg + "0000000000001" ;
+			else
+				count_next <= count_reg;	
+				
+			end if;	
+end process;
+
+process(clk, reset) 
 begin
 
-	paddle_reg <= "00000100000";
-	paddle_next <= "00000100000";
+	if(reset = '1') then
+		paddle_reg <= "00010010000";
+	elsif(rising_edge(clk)) then
+		paddle_reg <= paddle_next;
+	end if;
+end process;
 
-	if(up = '1') then
-		paddle_next <= paddle_reg - 10;
-	elsif(down = '1') then
-		paddle_next <= paddle_reg + 10;
-	else
-		paddle_next <= paddle_reg;
+process(up, down, paddle_reg, paddle_next)
+begin
+	
+	if(up = '1' and paddle_reg > 75) then		
+		paddle_next <= paddle_reg - 10;	
+	elsif(down = '1' and paddle_reg < 405) then		
+		paddle_next <= paddle_reg + 10;	
 	end if;
 
 end process;
-process(clk, ball_x_pos, ball_y_pos)
+process(clk, ball_x_pos_next, ball_y_pos_next, reset)
 begin
-ball_x_pos <= "00000100000";
-ball_y_pos <= "00000100000";
-if(rising_edge(clk))then	
-ball_x_pos <= ball_x_pos + x_adder;
-ball_y_pos <= ball_y_pos + y_adder;
-else
-ball_x_pos <= ball_x_pos;
-ball_y_pos <= ball_y_pos;
-end if;
+	
+		if(reset = '1')then	
+			ball_x_pos <= "00000100000";
+			ball_y_pos <= "00000100000";
+		elsif(rising_edge(clk))then
+			ball_x_pos <= ball_x_pos_next;
+			ball_y_pos <= ball_y_pos_next;
+		end if;
 
 end process;
 
@@ -91,11 +108,11 @@ end process;
 			
 		end process;
 
-process(clk, reset, ball_x_pos, ball_y_pos, state_reg, state_next)
+process( ball_x_pos, ball_y_pos, state_reg)
 begin
 
 
-
+if(count_next = 5000) then
 state_next <= state_reg;
 
 case state_reg is 
@@ -115,33 +132,65 @@ case state_reg is
 	if(ball_x_pos - 5 = 15 )then
 		state_next <= hit_paddle;
 	end if;
+	
 	when hit_top =>
-		x_adder <= 1;
-		y_adder <= -1;
+		
 		state_next <= moving;
 	when hit_right =>
-		x_adder <= -1;
-		y_adder <= -1;
+		
 		state_next <= moving;
 	when hit_bottom =>
-		x_adder <= -1;
-		y_adder <= 1;
+		
 		state_next <= moving;
 	when hit_paddle =>
-		x_adder <= 1;
-		y_adder <= 1;
+	
 		state_next <= moving;
 	when lose=>
-		x_adder <= 0;
-		y_adder <= 0;
 		
+
+end case;	
+end if;
+end process;
+
+process( ball_x_pos, ball_y_pos, state_next)
+begin
+
+	ball_x_pos_next <= ball_x_pos + 1;
+	ball_y_pos_next <= ball_y_pos + 1;
+
+
+case state_reg is 
+	when moving =>
+	
+	ball_x_pos_next <= ball_x_pos + 1;
+	ball_y_pos_next <= ball_y_pos + 1;
+	when hit_top =>
+		ball_x_pos_next <= ball_x_pos + 1;
+		ball_y_pos_next <= ball_y_pos - 1;
+		
+	when hit_right =>
+		ball_x_pos_next <= ball_x_pos - 1;
+		ball_y_pos_next <= ball_y_pos - 1;
+		
+	when hit_bottom =>
+		ball_x_pos_next <= ball_x_pos - 1;
+		ball_y_pos_next <= ball_y_pos + 1;
+		
+	when hit_paddle =>
+		ball_x_pos_next <= ball_x_pos + 1;
+		ball_y_pos_next <= ball_y_pos + 1;
+		
+	when lose=>
+		ball_x_pos_next <= ball_x_pos ;
+		ball_y_pos_next <= ball_y_pos ;
+
 end case;	
 
 end process;
 
 paddle_y <= paddle_next;
-ball_x <= ball_x_pos;
-ball_y <= ball_y_pos;
+ball_x <= ball_x_pos_next;
+ball_y <= ball_y_pos_next;
 
 end Behavioral;
 
