@@ -34,7 +34,7 @@ COMPONENT Button_Logic
 END COMPONENT;
 
 
-type pong_type is(moving, hit_top, hit_right, hit_bottom, hit_paddle, lose_state);
+type pong_type is(moving, hit_top, hit_right, hit_bottom, hit_paddle_top, hit_paddle_bottom, lose_state);
 
 signal state_reg, state_next: pong_type;
 
@@ -77,7 +77,7 @@ begin
 
 paddle_next <= paddle_reg;
 	
-	if(up_pulse = '1' and paddle_reg > 60) then		
+	if(up_pulse = '1' and paddle_reg > 55) then		
 		paddle_next <= paddle_reg - 10;	
 	elsif(down_pulse = '1' and paddle_reg < 430) then		
 		paddle_next <= paddle_reg + 10;	
@@ -92,7 +92,7 @@ begin
 	if(reset = '1') then
 		count_reg <= (others=>'0');
 	elsif(rising_edge(clk)) then
-		count_reg <= paddle_next;
+		count_reg <= count_next;
 	end if;
 end process;
 
@@ -100,8 +100,8 @@ count_next <= (others=>'0') when count_reg >= speed else
 				  count_reg + 1 when v_completed = '1' else
 				  count_reg;
 
-speed <= to_unsigned(10000,11) when speed_switch = '1' else
-			to_unsigned(4000,11);
+speed <= to_unsigned(400,11) when speed_switch = '1' else
+			to_unsigned(200,11);
 
 --ball flip flop
 process(clk, reset)
@@ -116,7 +116,7 @@ process(clk, reset)
 end process;
 
 --ball reset flip flop
-process(clk, ball_x_pos_next, ball_y_pos_next, reset)
+process(clk,  reset)
 begin
 	
 		if(reset = '1')then	
@@ -156,7 +156,7 @@ if(count_next = 0) then
 
 case state_reg is 
 	when moving =>
-	if(ball_x_pos - 5 = 0 )then
+	if(ball_x_pos - 8 = 0 )then
 		state_next <= lose_state;
 	end if;
 	if(ball_x_pos + 5 = 640 )then
@@ -168,8 +168,11 @@ case state_reg is
 	if(ball_y_pos + 5 = 480 )then
 		state_next <= hit_bottom;
 	end if;
-	if(ball_x_pos - 5 = 15 )then
-		state_next <= hit_paddle;
+	if(ball_x_pos - 5 = 15 and ball_y_pos > (paddle_reg - 50) and ball_y_pos < (paddle_reg) )then
+		state_next <= hit_paddle_top;
+		end if;
+	if(ball_x_pos - 5 = 15 and ball_y_pos > (paddle_reg ) and ball_y_pos < (paddle_reg + 50) )then
+		state_next <= hit_paddle_bottom;
 	end if;
 	
 	when hit_top =>
@@ -181,9 +184,12 @@ case state_reg is
 	when hit_bottom =>
 		
 		state_next <= moving;
-	when hit_paddle =>
+	when hit_paddle_top =>
 	
 		state_next <= moving;
+	when hit_paddle_bottom =>
+	
+		state_next <= moving;	
 	when lose_state=>
 		
 
@@ -197,7 +203,7 @@ begin
 	ball_x_pos_next <= ball_x_pos;
 	ball_y_pos_next <= ball_y_pos;
 	
-if(count_next = 0 and v_completed = '1' and lose = '0') then
+if(count_next = 0 and v_completed = '1' and lose ='0') then
 		if(x_dir = '1') then
 			ball_x_pos_next <= ball_x_pos + 1;
 		else
@@ -205,10 +211,10 @@ if(count_next = 0 and v_completed = '1' and lose = '0') then
 	
 		end if;
 		
-if(y_dir = '1') then
-			ball_y_pos_next <= ball_y_pos + 1;
-		else
+		if(y_dir = '1') then
 			ball_y_pos_next <= ball_y_pos - 1;
+		else
+			ball_y_pos_next <= ball_y_pos + 1;
 	
 		end if;		
 	end if;
@@ -225,8 +231,8 @@ if(count_next = 0) then
 
 case state_reg is 
 	when moving =>
-	
-	
+		x_next <= x_dir;
+		y_next <= y_dir;	
 	when hit_top =>
 		y_next <= '0';
 		
@@ -236,9 +242,12 @@ case state_reg is
 	when hit_bottom =>
 		y_next <= '1';
 		
-	when hit_paddle =>
+	when hit_paddle_top =>
+		y_next <= '0';
+		x_next <= '1';
+	when hit_paddle_bottom =>
 		y_next <= '1';
-		
+		x_next <= '1';	
 	when lose_state=>
 		lose_next <= '1';
 		x_next <= '1';
