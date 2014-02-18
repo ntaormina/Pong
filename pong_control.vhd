@@ -100,8 +100,8 @@ count_next <= (others=>'0') when count_reg >= speed else
 				  count_reg + 1 when v_completed = '1' else
 				  count_reg;
 
-speed <= to_unsigned(400,11) when speed_switch = '1' else
-			to_unsigned(200,11);
+speed <= to_unsigned(750,11) when speed_switch = '1' else
+			to_unsigned(550,11);
 
 --ball flip flop
 process(clk, reset)
@@ -156,7 +156,7 @@ if(count_next = 0) then
 
 case state_reg is 
 	when moving =>
-	if(ball_x_pos - 8 = 0 )then
+	if(ball_x_pos - 7 = 0 )then
 		state_next <= lose_state;
 	end if;
 	if(ball_x_pos + 5 = 640 )then
@@ -168,10 +168,10 @@ case state_reg is
 	if(ball_y_pos + 5 = 480 )then
 		state_next <= hit_bottom;
 	end if;
-	if(ball_x_pos - 5 = 15 and ball_y_pos > (paddle_reg - 50) and ball_y_pos < (paddle_reg) )then
+	if(ball_x_pos - 5 = 16 and ball_y_pos > (paddle_reg - 50) and ball_y_pos < (paddle_reg) )then
 		state_next <= hit_paddle_top;
 		end if;
-	if(ball_x_pos - 5 = 15 and ball_y_pos > (paddle_reg ) and ball_y_pos < (paddle_reg + 50) )then
+	if(ball_x_pos - 5 = 16 and ball_y_pos >= (paddle_reg ) and ball_y_pos < (paddle_reg + 50) )then
 		state_next <= hit_paddle_bottom;
 	end if;
 	
