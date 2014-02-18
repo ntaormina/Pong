@@ -43,14 +43,42 @@ entity pong_control is
   );
 end pong_control;
 
+
+
 architecture Behavioral of pong_control is
+
+COMPONENT Button_Logic
+	PORT(
+		clk : IN std_logic;
+		reset : IN std_logic;
+		button_in : IN std_logic;          
+		button_out : OUT std_logic
+		);
+END COMPONENT;
+
+
 type pong_type is(moving, hit_top, hit_right, hit_bottom, hit_paddle, lose);
 signal state_reg, state_next: pong_type;
 signal  paddle_next, paddle_reg, ball_x_pos, ball_y_pos, ball_x_pos_next, ball_y_pos_next : unsigned(10 downto 0);
 signal count_reg, count_next : unsigned(12 downto 0);
+signal up_pulse, down_pulse : std_logic;
 
 
 begin
+
+Inst_up_Button_Logic: Button_Logic PORT MAP(
+		clk => clk,
+		reset => reset,
+		button_in => up,
+		button_out => up_pulse
+	);
+	
+Inst_down_Button_Logic: Button_Logic PORT MAP(
+		clk => clk,
+		reset => reset,
+		button_in => down,
+		button_out => down_pulse
+	);
 
 process(count_reg, v_completed)
 		begin
@@ -74,12 +102,12 @@ begin
 	end if;
 end process;
 
-process(up, down, paddle_reg, paddle_next)
+process(up_pulse, down_pulse, paddle_reg, paddle_next)
 begin
 	
-	if(up = '1' and paddle_reg > 75) then		
+	if(up_pulse = '1' and paddle_reg > 75) then		
 		paddle_next <= paddle_reg - 10;	
-	elsif(down = '1' and paddle_reg < 405) then		
+	elsif(down_pulse = '1' and paddle_reg < 405) then		
 		paddle_next <= paddle_reg + 10;	
 	end if;
 
