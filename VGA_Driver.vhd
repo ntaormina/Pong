@@ -1,21 +1,6 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: C2C Nik Taormina
--- 
--- Create Date:    09:59:31 01/29/2014 
--- Design Name: 
--- Module Name:    VGA_Driver - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
+--C2C Nik Taormina
+--This is the top level code for implementing pong on a spartan 6 FPGA
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -30,6 +15,7 @@ entity atlys_lab_video is
              reset : in  std_logic;
 				 up   : in std_logic;
 				 down   : in std_logic;
+				 spd_switch   : in std_logic;
              tmds  : out std_logic_vector(3 downto 0);
              tmdsb : out std_logic_vector(3 downto 0)
          );
@@ -74,7 +60,8 @@ COMPONENT pixel_gen
 		reset : IN std_logic;
 		up : IN std_logic;
 		down : IN std_logic;
-		v_completed : IN std_logic;          
+		v_completed : IN std_logic;  
+		speed_switch : IN std_logic;	
 		ball_x : OUT unsigned(10 downto 0);
 		ball_y : OUT unsigned(10 downto 0);
 		paddle_y : OUT unsigned(10 downto 0)
@@ -146,6 +133,7 @@ begin
 		reset => reset,
 		up => up,
 		down => down,
+		speed_switch => spd_switch,
 		v_completed => completed_connector,
 		ball_x => ball_x_sig,
 		ball_y => ball_y_sig,

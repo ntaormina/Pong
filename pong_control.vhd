@@ -1,4 +1,8 @@
-
+----------------------------------------------------------------
+--C2C Nik Taormina
+--This module controls ball motion and wall hits as well as
+--paddle motion and ball speed
+----------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
@@ -71,6 +75,7 @@ begin
 		paddle_reg <= paddle_next;
 	end if;
 end process;
+
 --paddle logic
 process(up_pulse, down_pulse, paddle_reg, paddle_next)
 begin
@@ -100,7 +105,7 @@ count_next <= (others=>'0') when count_reg >= speed else
 				  count_reg + 1 when v_completed = '1' else
 				  count_reg;
 
-speed <= to_unsigned(750,11) when speed_switch = '1' else
+speed <= to_unsigned(300,11) when speed_switch = '1' else
 			to_unsigned(550,11);
 
 --ball flip flop
@@ -129,6 +134,7 @@ begin
 
 end process;
 
+--direction modifier flip flop
 process(clk, reset)
 begin
 	
@@ -144,15 +150,13 @@ begin
 
 end process;
 
-
+--ball state machine
 process(state_reg, state_next, count_next, ball_x_pos, ball_y_pos, state_reg, paddle_reg)
 begin
 
 state_next <= state_reg;
 
 if(count_next = 0) then
-
-
 
 case state_reg is 
 	when moving =>
@@ -197,6 +201,7 @@ end case;
 end if;
 end process;
 
+--combinational direction changer
 process(count_next)
 begin
 
@@ -220,6 +225,7 @@ if(count_next = 0 and v_completed = '1' and lose ='0') then
 	end if;
 end process;	
 
+--state machine to set directional ball changes
 process( state_reg, ball_x_pos, ball_y_pos, state_next, count_next, lose )
 begin
 
@@ -257,6 +263,7 @@ end if;
 
 end process;
 
+--output logic
 paddle_y <= paddle_reg;
 ball_x <= ball_x_pos_next;
 ball_y <= ball_y_pos_next;

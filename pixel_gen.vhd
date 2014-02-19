@@ -1,21 +1,7 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date:    10:32:35 01/29/2014 
--- Design Name: 
--- Module Name:    pixel_gen - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
+--C2C Nik Taormina
+--This module sets r,g, and b values to display an AF logo, paddle, and ball for a 
+--pong video game
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -53,16 +39,19 @@ begin
 		b <= (others => '0');
 		
 		if(blank = '0') then 
+		--draw ball
 		if(column > (ball_x - 5) and column < (ball_x + 5) and row > (ball_y - 5) and row < (ball_y + 5)) then
 		r <= (others => '1'); 
 		g <= (others => '0');
 		b <= (others => '0');
 		end if;
+		--draw paddle 100 pixels wide
 		if(column > 0 and column < 15 and row > (paddle_y - 50) and row < (paddle_y + 50)) then
 		r <= (others => '0'); 
 		g <= (others => '1');
 		b <= (others => '0');
 		end if;		
+		--draw AF
 		if(column > 230 and column < 246 and row > 150 and row < 276) then
 		r <= (others => '0'); 
 		g <= (others => '0');
@@ -88,7 +77,7 @@ begin
 		g <= (others => '0');
 		b <= (others => '1');
 		end if;
-		if(column > 309 and column < 326 and row > 224 and row < 301) then
+		if(column > 309 and column < 326 and row > 224 and row < 325) then
 		r <= (others => '0'); 
 		g <= (others => '0');
 		b <= (others => '1');

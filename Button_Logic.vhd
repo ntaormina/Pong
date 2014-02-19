@@ -1,4 +1,7 @@
-
+--------------------------------------
+--C2C Nik Taormina
+--This module debounces buttons by delaying in the press state
+--------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
@@ -21,6 +24,7 @@ signal count, count_next: unsigned(19 downto 0);
 
 begin
 
+--count flip flop and logic
 process(clk, reset, button_next, count)
 begin
 
@@ -38,6 +42,7 @@ begin
 
 end process;
 
+--button flip flop
 process(clk, reset)
 begin
 
@@ -49,6 +54,7 @@ begin
 	
 end process;	
 
+--button state machine and delay
 process(count, button_reg, button_in)
 begin
 
@@ -72,6 +78,7 @@ end process;
 process(button_reg)
 begin
 
+--sets signal to one when button is released
 case button_reg is
 	when waiting =>
 		button_next_sig <= '0';
@@ -83,6 +90,8 @@ end case;
 
 end process;	
 
+
+--output logic
 button_out <= button_next_sig;
 	
 
