@@ -9,7 +9,7 @@ Implementation
 ==============
 The final FSM for `pong_control.vhd` is as follows:
 
-
+![state machine for pong_control](states.jpg)
 
 ```vhdl
 state_next <= state_reg;
