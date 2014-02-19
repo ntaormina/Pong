@@ -176,3 +176,35 @@ entity Button_Logic is
            button_out : out  STD_LOGIC);
 end Button_Logic;
 ```
+
+Test/Debug
+==========
+-The methodology I took in this lab was to get one thing working at a time. First I did the AF logo, then the paddle motion, and then the ball logic. 
+
+- Most of the testing was done by plugging in to the HDMI cable and seeing if what I had made so far worked.
+
+- I ran into a problem with my vga sync. I was not setting v_completed to hi at all and since my ball movement requires that v_completed be high the ball wouldn't move until I did this.
+
+- Another problem I ran into was typos in flip flops. Obviously it wont work if you're setting the wrong signals to zero. 
+
+- Another problem I ran into was in trying to change the reset button to the actual reset button. I just had a blank screen all the time with this so I set it to the middle button.
+
+- I ran into many small syntactical problems that I really solved with brute force. I looked up things in the book
+or on the internet or just read the console and tried things.
+
+-I never had an issue with making the ball go behind the AF logo because I drew the parts of the letters as parts of letter not by clomun or row.
+
+
+
+Conclusion
+==========
+From this lab I definitely took away that FPGAs are not good for making sequential games and how hard you have to work at something to make it work. It did however made me appreciate
+the versatitlity and capability of the FPGA. Next time I would probably rewrite my code sooner instead of trying to find some small fix all error. Separating state machines definitely helped.
+
+
+Documentation
+=============
+C2C Michael Bentley, C2C John Miller, and C2C Ryan Good gave me advice 
+on ways they solved the problems they encountered, mainly how to separate state machines for paddle control and ball control.  John showed me that instead of trying to directly add or subtract the balls position in a state machine to use modifiers such as x_dir and y_dir in the actual state machine and use combinational logic later to add or subtract. He also showed me how to debounce buttons with a state machine. Michael and John gave me advice on expanding my congested state machines.Ryan 
+showed me that I could use combinational logic to set and change the ball speed quite easily.
+All of this advice lead to my completion of the lab and all credit is given to those who had the ideas and contributed them to me.
